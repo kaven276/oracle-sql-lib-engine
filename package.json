@@ -1,0 +1,26 @@
+{
+  "name": "node.oracle-sql-engine",
+  "version": "0.0.2",
+  "description": "sql file as module and service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "李勇 <kaven276@vip.sina.com>",
+  "license": "lgpl-2.1",
+  "dependencies": {
+    "chokidar": "^2.1.2",
+    "debug": "^4.1.1",
+    "koa": "^2.7.0",
+    "koa-body": "^2.5.0",
+    "oracledb": "^3.1.2",
+    "qs": "^6.9.0",
+    "shelljs": "^0.8.3"
+  },
+  "devDependencies": {
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  }
+}
