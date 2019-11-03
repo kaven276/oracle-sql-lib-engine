@@ -1,5 +1,5 @@
 {
-  "name": "node.oracle-sql-engine",
+  "name": "oracle-sql-lib-engine",
   "version": "0.0.2",
   "description": "sql file as module and service",
   "main": "index.js",
