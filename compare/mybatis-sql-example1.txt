@@ -1,0 +1,94 @@
+SELECT a.gene_time,
+       a.flow_id,
+       a.sys_code,
+       a.node_id,
+       (SELECT b.node_name FROM tm_node b WHERE b.node_id = a.node_id) node_name,
+       a.tache_id,
+       (SELECT b.tache_name
+          FROM tm_tache b
+         WHERE b.flow_id = '1'
+           AND b.tache_id = a.tache_id) tache_name,
+       a.task_id,
+       a.order_from_type,
+       (SELECT b.param_value
+          FROM td_ord_sys_dict b
+         WHERE b.param_type = 'orderFromType'
+           AND b.param_key = a.order_from_type
+           AND rownum = 1) order_from_type_name,
+       a.order_from,
+       (SELECT b.param_value
+          FROM td_ord_sys_dict b
+         WHERE b.param_type IN ('orderFrom330', 'orderFrom331')
+           AND b.param_key = a.order_from
+           AND rownum = 1) order_from_name,
+       trade_id_b,
+       order_id_b,
+       trade_id_cb,
+       order_id_cb,
+       order_id_iom,
+       net_type_code,
+       decode(net_type_code, '30', '普通电话', '44', '宽带', '') net_type,
+       trade_type_code,
+       decode(trade_type_code, '10', '开户', '业务类型') trade_type,
+       city_code,
+       (SELECT b.param_value
+          FROM td_ord_sys_dict b
+         WHERE b.param_type = 'cityCode'
+           AND b.param1 = a.city_code
+           AND rownum = 1) city_name,
+       depart_id,
+       staff_id,
+       serial_number,
+       cust_name,
+       contact_phone,
+       timeout_tag,
+       start_date,
+       end_date,
+       urge_name,
+       urge_phone,
+       a.time_limit,
+       a.time_unit,
+       (a.time_limit || a.time_unit) time_limit_desc,
+       a.time_out_min,
+       a.time_out_desc,a.err_info,a.err_info err_info1,a.wangname,
+       (select max(flag_time) from flow_order_lsc b where b.task_id = a.task_id) flag_time,
+       a.flag_order
+  FROM tf_trade a 
+ WHERE a.timeout_tag = '1' 
+      <if test="orderFromType != null and orderFromType != ''">
+          AND a.order_from_type = #{orderFromType}
+        </if>
+        <if test="orderFrom != null and orderFrom != ''">
+          AND a.order_from = #{orderFrom}
+        </if>
+        <if test="cityCode != null and cityCode != ''">
+          AND a.city_code = #{cityCode}
+        </if>
+        <if test="gridId != null and gridId != ''">
+          AND a.wangid = #{gridId}
+        </if>
+        <if test="flowId != null and flowId != ''">
+          AND a.flow_id = #{flowId}
+        </if>
+        <if test="nodeId != null and nodeId != ''">
+          AND a.node_id = #{nodeId}
+        </if>
+        <if test="lastTime != null and lastTime != ''">
+          AND a.gene_time = to_date(#{lastTime}, 'YYYY-MM-DD hh24:mi:ss')
+        </if>
+        <if test="qryType != null and qryType != ''">
+        <choose>
+          <when test="qryType == 1">
+            AND time_out_min > 5
+          </when>
+          <when test="qryType == 2">
+            AND time_out_min > 10
+          </when>
+          <when test="qryType == 3">
+            AND time_out_min > 30
+          </when>
+        </choose>
+        </if>
+        <if test="isOrderBy != null and isOrderBy != ''">
+          order by time_out_min desc
+        </if>
