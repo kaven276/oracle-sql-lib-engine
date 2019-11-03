@@ -1,8 +1,9 @@
 {
   "name": "oracle-sql-lib-engine",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "sql file as module and service",
   "main": "index.js",
+  "repository": "kaven276/oracle-sql-lib-engine",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
