@@ -1,3 +1,4 @@
+require('./cfg.js'); // must before require(server)
 require('./buildAndKeepPools.js');
 
 const oracledb = require('oracledb');

@@ -1,3 +1,4 @@
+const cfg = require('./cfg.js');
 const oracledb = require('oracledb');
 const chokidar = require('chokidar');
 const { join } = require('path');

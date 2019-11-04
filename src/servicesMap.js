@@ -1,3 +1,4 @@
+const cfg = require('./cfg.js');
 const chokidar = require('chokidar');
 const { join } = require('path');
 const fs = require('fs');
