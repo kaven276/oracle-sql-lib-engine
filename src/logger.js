@@ -1,8 +1,18 @@
 const cfg = require('./cfg.js');
 const bunyan = require('bunyan');
 const path = require('path');
+const fs = require('fs');
 
-const dirLog = cfg.dirLog || `${__dirname.split('/').slice(0, 3).join('/')}/.pm2/logs`;
+const dirLog = (() => {
+  if (cfg.dirLog) return cfg.dirLog;
+  const pm2logDir = `${__dirname.split('/').slice(0, 3).join('/')}/.pm2-/logs`;
+  if (fs.existsSync(pm2logDir)) {
+    return pm2logDir;
+  }
+  return '.'; // fallback to server entrance dir
+})();
+
+
 const logger = bunyan.createLogger({
   name: 'osql',
   streams: [{
