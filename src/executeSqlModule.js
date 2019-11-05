@@ -3,8 +3,12 @@
  */
 
 const debugSqlExec = require('debug')('osql:exec');
+const { default: logger } = require('./logger.js');
 const calculateBindObj = require('./middleware/calculateBindObj.js');
 const processOutBinds = require('./middleware/processOutBinds.js');
+const cfg = require('./cfg.js');
+
+const { ConnectionTimeSlowThres, ExecutionTimeSlowThres } = cfg;
 
 async function executeSqlModule(m, reqOrigin, internal) {
   // 获取最终的请求，也即转换后的请求
@@ -39,6 +43,10 @@ async function executeSqlModule(m, reqOrigin, internal) {
   const beforeConnectionTime = Date.now();
   const connection = await oracledb.getConnection(m.pool);
   const connectionTime = Date.now() - beforeConnectionTime;
+  if (connectionTime > ConnectionTimeSlowThres) {
+    logger.warn({ type: 'slow', connectionTime }, { path: m.path, req: reqOrigin });
+  }
+
   connection.module = 'ora-sql-lib';
   connection.action = m.path;
   // connection.clientId 回头写 staffId 或者 callId
@@ -47,6 +55,9 @@ async function executeSqlModule(m, reqOrigin, internal) {
   let sqlresult = await connection.execute(sqltext, bindObj, m.options || {});
   await processOutBinds(sqlresult, bindObj);
   const executionTime = Date.now() - beforeExecutionTime;
+  if (executionTime > ExecutionTimeSlowThres) {
+    logger.warn({ type: 'slow', executionTime }, { path: m.path, req: reqOrigin });
+  }
 
   sqlresult = (() => {
     if (m.outConverter && typeof m.outConverter === 'function') {

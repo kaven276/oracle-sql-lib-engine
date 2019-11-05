@@ -6,6 +6,7 @@ const Koa = require('koa');
 const qs = require('qs');
 global.sql = require('./sql.js');
 
+const { default: logger } = require('./logger.js');
 const converterMap = require('./convertsMap.js');
 const { registry } = require('./servicesMap.js');
 const adminService = require('./middleware/adminService.js');
@@ -112,7 +113,9 @@ app.use(async (ctx, next) => {
       data: sqlresult,
       meta,
     }, null, 2);
+    logger.info({ type: 'success' }, { path: m.path, req: ctx.state.req });
   } catch (e) {
+    logger.error({ type: 'error', err: e }, { path: m.path, req: ctx.state.req });
     ctx.response.body = JSON.stringify({
       respCode: e.errorNum,
       respDesc: `${m.title} - ${e.message}`,
