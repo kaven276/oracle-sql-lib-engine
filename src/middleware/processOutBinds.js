@@ -15,6 +15,7 @@ module.exports = async function processOutBinds(sqlresult, bindObj) {
       }
     } else if (bindConfig.type === oracledb.CLOB) {
       outBinds[n] = await readLobAsync(outBinds[n]);
+      // outBinds[n] = await outBinds[n].getData(); // oracledb 4.0 support it
     }
     const outName = n.match(/^(.*)(Out|Cur)($|Number|Date|String|Clob|Blob|Buffer)/);
     if (outName) {
