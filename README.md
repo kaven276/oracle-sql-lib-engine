@@ -58,6 +58,16 @@ exports.outConverter = (sqlResult, request) = {}; // 将标准 node-oracledb sql
 LOCAL_DEV=1 DEBUG='osql:pools,osql:exec' ENV=stage node .
 ```
 
+运维
+======
+
+## 查看连接池状态
+
+知道连接池是否够用非常重要，系统提供了地址为 "/$admin/pool" 的服务用于查看连接池占用状态
+
+- 查看全部连接池状态范例: `curl 'http://localhost:3014/$admin/pool'`
+- 查看指定名称如task连接池的状态范例: `curl 'http://localhost:3014/$admin/pool/task'`
+
 机制
 ========
 - 服务启动扫描全部 services 目录
