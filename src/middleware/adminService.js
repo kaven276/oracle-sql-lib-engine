@@ -10,6 +10,8 @@ module.exports = async function $admin(ctx, next) {
       ctx.body = {
         connectionsInUse: pool.connectionsInUse,
         connectionsOpen: pool.connectionsOpen,
+        poolMax: pool.poolMax,
+        free: pool.poolMax - pool.connectionsInUse,
       };
     }
     return;
