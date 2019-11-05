@@ -11,6 +11,7 @@
   "author": "李勇 <kaven276@vip.sina.com>",
   "license": "lgpl-2.1",
   "dependencies": {
+    "bunyan": "^1.8.12",
     "chokidar": "^2.1.2",
     "debug": "^4.1.1",
     "koa": "^2.7.0",
