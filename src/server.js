@@ -8,6 +8,7 @@ global.sql = require('./sql.js');
 
 const converterMap = require('./convertsMap.js');
 const { registry } = require('./servicesMap.js');
+const adminService = require('./middleware/adminService.js');
 const executeSqlModule = require('./executeSqlModule.js');
 
 const statsMap = {};
@@ -44,6 +45,9 @@ app.use(async (ctx, next) => {
   ctx.state.req = { ...msg, ...qs.parse(ctx.querystring) };
   await next();
 });
+
+// 如果是管理服务
+app.use(adminService);
 
 // 获取对应的模块
 app.use(async (ctx, next) => {
