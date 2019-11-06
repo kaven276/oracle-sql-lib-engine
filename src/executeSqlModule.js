@@ -41,7 +41,16 @@ async function executeSqlModule(m, reqOrigin, internal) {
 
   // 从连接池获取连接
   const beforeConnectionTime = Date.now();
-  const connection = await oracledb.getConnection(m.pool);
+  let connection;
+  try {
+    connection = await oracledb.getConnection(m.pool);
+  } catch (e) {
+    return {
+      error: e,
+      errorType: 'connect',
+      meta: { },
+    };
+  }
   const connectionTime = Date.now() - beforeConnectionTime;
   if (connectionTime > ConnectionTimeSlowThres) {
     logger.warn({ type: 'slow', connectionTime }, { path: m.path, req: reqOrigin });
@@ -86,6 +95,7 @@ async function executeSqlModule(m, reqOrigin, internal) {
   } else { // 执行异常分支
     returnResult = {
       error,
+      errorType: 'execute',
       meta: {
         connectionTime,
         executionTime,
