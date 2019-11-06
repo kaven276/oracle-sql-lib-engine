@@ -1,0 +1,17 @@
+{
+  "name": "oracle-sql-lib-example",
+  "version": "0.0.0",
+  "description": "oracle sql lib example project based on oracle-sql-lib-engine",
+  "main": "index.js",
+  "scripts": {
+  },
+  "keywords": [],
+  "author": "李勇 <kaven276@vip.sina.com>",
+  "license": "ISC",
+  "dependencies": {
+    "oracle-sql-lib-engine": "^0.0.9",
+    "oracledb": "^3.1.2"
+  },
+  "devDependencies": {
+  }
+}
