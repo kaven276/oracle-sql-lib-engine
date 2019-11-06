@@ -68,6 +68,19 @@ LOCAL_DEV=1 DEBUG='osql:pools,osql:exec' ENV=stage node .
 - 查看全部连接池状态范例: `curl 'http://localhost:3014/$admin/pool'`
 - 查看指定名称如task连接池的状态范例: `curl 'http://localhost:3014/$admin/pool/task'`
 
+
+## 查看 osql 日志
+
+```shell
+# 范例：查看告警级别的，类型为 slow，执行时间大于 100000ms 的记录。
+cat ~/.pm2/logs/osql0.log | bunyan -l warn -c 'this.type="slow" && this.executionTime>100000'
+
+# 范例：查看所有不是慢的告警
+cat osql2.log | bunyan -l WARN -c 'this.type != "slow"'
+```
+
+注: bunyan 可以调用 node_modules/.bin/bunyan，也可以做 alias 或者 npm 全局安装命令。
+
 机制
 ========
 - 服务启动扫描全部 services 目录
