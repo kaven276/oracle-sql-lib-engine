@@ -121,7 +121,7 @@ app.use(async (ctx, next) => {
     if (error) {
       logger.error({ type: 'error', errorType, err: error }, { path: m.path, req: ctx.state.req });
       ctx.response.body = JSON.stringify({
-        respCode: error.errorNum,
+        respCode: -error.errorNum,
         respDesc: `${m.title} - ${error.message}`,
         meta: {
           ...meta,
