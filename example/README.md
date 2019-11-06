@@ -3,6 +3,7 @@
 
 范例：启动，并且控制台能看到连接池活动日志和 sql 执行日志
 ```shell
+exports.POOL_EXAMPLE_URL='user:password@ip:port/service'
 DEBUG='osql:pools,osql:exec' UV_THREADPOOL_SIZE=20 node .
 ```
 
