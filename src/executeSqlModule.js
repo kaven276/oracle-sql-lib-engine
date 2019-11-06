@@ -52,32 +52,48 @@ async function executeSqlModule(m, reqOrigin, internal) {
   // connection.clientId 回头写 staffId 或者 callId
 
   const beforeExecutionTime = Date.now();
-  let sqlresult = await connection.execute(sqltext, bindObj, m.options || {});
-  await processOutBinds(sqlresult, bindObj);
+  let sqlresult;
+  let error;
+  try {
+    sqlresult = await connection.execute(sqltext, bindObj, m.options || {});
+  } catch (e) {
+    error = e;
+  }
+
   const executionTime = Date.now() - beforeExecutionTime;
   if (executionTime > ExecutionTimeSlowThres) {
     logger.warn({ type: 'slow', executionTime }, { path: m.path, req: reqOrigin });
   }
 
-  sqlresult = (() => {
+  let returnResult;
+  if (sqlresult) { // 执行正常分支
+    await processOutBinds(sqlresult, bindObj);
     if (m.outConverter && typeof m.outConverter === 'function') {
       // outConverter 可以直接修改 sqlresult 内容，而不返回新的 sqlresult 对象
-      return m.outConverter(sqlresult, req) || sqlresult;
+      sqlresult = m.outConverter(sqlresult, req) || sqlresult;
     }
-    return sqlresult;
-  })();
 
-  if (sqlresult.rowsAffected || !sqlresult.rows) {
-    await connection.commit();
+    if (sqlresult.rowsAffected || !sqlresult.rows) {
+      await connection.commit();
+    }
+    returnResult = {
+      sqlresult,
+      meta: {
+        connectionTime,
+        executionTime,
+      },
+    };
+  } else { // 执行异常分支
+    returnResult = {
+      error,
+      meta: {
+        connectionTime,
+        executionTime,
+      },
+    };
   }
-  await connection.close();
-  return {
-    sqlresult,
-    meta: {
-      connectionTime,
-      executionTime,
-    },
-  };
+  await connection.release(); // 处理完响应第一时间释放连接
+  return returnResult;
 }
 
 module.exports = executeSqlModule;

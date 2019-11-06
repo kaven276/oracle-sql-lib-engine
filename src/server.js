@@ -106,14 +106,28 @@ app.use(async (ctx, next) => {
   const m = ctx.state.m;
   const internal = {}; // 用于将执行内部过程的信息带出到外部
   try {
-    const { sqlresult, meta } = await executeSqlModule(m, ctx.state.req, internal);
-    ctx.response.body = JSON.stringify({
-      respCode: 0,
-      respDesc: `${m.title} - 成功`,
-      data: sqlresult,
-      meta,
-    }, null, 2);
-    logger.info({ type: 'success' }, { path: m.path, req: ctx.state.req });
+    const { sqlresult, meta, error } = await executeSqlModule(m, ctx.state.req, internal);
+    if (sqlresult) {
+      ctx.response.body = JSON.stringify({
+        respCode: 0,
+        respDesc: `${m.title} - 成功`,
+        data: sqlresult,
+        meta,
+      }, null, 2);
+      logger.info({ type: 'success' }, { path: m.path, req: ctx.state.req });
+    }
+    if (error) {
+      logger.error({ type: 'error', err: error }, { path: m.path, req: ctx.state.req });
+      ctx.response.body = JSON.stringify({
+        respCode: error.errorNum,
+        respDesc: `${m.title} - ${error.message}`,
+        meta: {
+          ...meta,
+          sqltext: internal.sqltext,
+          bindObj: internal.bindObj,
+        },
+      }, null, 2);
+    }
   } catch (e) {
     logger.error({ type: 'error', err: e }, { path: m.path, req: ctx.state.req });
     ctx.response.body = JSON.stringify({
