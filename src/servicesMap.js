@@ -84,6 +84,7 @@ function checkAndRegisterModule(m, path, oper) {
   }
   // 检查必要属性是否齐全
   m.sqltext = m.sqltext || m.sql; // 写成 sql 或者 sqltext 都行
+  m.pool = m.pool || cfg.defaultPoolName || path.split('/')[1];
   const flagLoadSqlFile = !m.sqltext;
   if (!m.sqltext) {
     loadSqlFile(m, path);
