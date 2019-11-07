@@ -6,4 +6,4 @@ const defaultConfig = {
   ConnectionTimeSlowThres: 5, // higher than this, log slow connection
   ExecutionTimeSlowThres: 50, // higher than this, log slow execution
 };
-module.exports = { ...appConfig, ...defaultConfig };
+module.exports = { ...defaultConfig, ...appConfig };
