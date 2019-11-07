@@ -1,0 +1,1 @@
+create sequence osql_seq_trade_id
