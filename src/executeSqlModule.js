@@ -77,13 +77,13 @@ async function executeSqlModule(m, reqOrigin, internal) {
   let returnResult;
   if (sqlresult) { // 执行正常分支
     await processOutBinds(sqlresult, bindObj);
+    if (sqlresult.rowsAffected || !sqlresult.rows) {
+      await connection.commit();
+    }
+    await connection.release(); // 处理完响应第一时间释放连
     if (m.outConverter && typeof m.outConverter === 'function') {
       // outConverter 可以直接修改 sqlresult 内容，而不返回新的 sqlresult 对象
       sqlresult = m.outConverter(sqlresult, req) || sqlresult;
-    }
-
-    if (sqlresult.rowsAffected || !sqlresult.rows) {
-      await connection.commit();
     }
     returnResult = {
       sqlresult,
@@ -101,8 +101,8 @@ async function executeSqlModule(m, reqOrigin, internal) {
         executionTime,
       },
     };
+    await connection.release(); // 处理完响应第一时间释放连接
   }
-  await connection.release(); // 处理完响应第一时间释放连接
   return returnResult;
 }
 
