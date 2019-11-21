@@ -5,6 +5,9 @@ function extractValueByPath(obj, path) {
   for (const sect of sects) {
     current = current[sect];
   }
+  if (current === undefined) {
+    return '';
+  }
   return current;
 }
 
