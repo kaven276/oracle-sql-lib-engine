@@ -28,7 +28,7 @@ module.exports = function calculateBindObj(sqltext, req, bindObjCfg) {
             break;
           case oracledb.BIND_IN:
           case oracledb.BIND_INOUT:
-            bindObj[para] = { ...bindCfg, val: req[para] };
+            bindObj[para] = { ...bindCfg, val: extractValueByPath(req, para) };
             break;
           default:
         }
