@@ -17,7 +17,7 @@
     "koa": "^2.7.0",
     "koa-body": "^2.5.0",
     "oracledb": "^3.1.2",
-    "qs": "^6.9.0",
+    "qs": "^6.9.1",
     "shelljs": "^0.8.3"
   },
   "devDependencies": {
