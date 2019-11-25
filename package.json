@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "kaven276/oracle-sql-lib-engine",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cd example && DEBUG='osql:pools,osql:exec' node ."
   },
   "keywords": [],
   "author": "李勇 <kaven276@vip.sina.com>",
