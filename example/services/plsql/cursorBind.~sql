@@ -1,0 +1,21 @@
+PL/SQL Developer Test script 3.0
+10
+declare
+  v_type varchar2(10) := upper(:type);
+begin
+  if v_type = 'table' then
+    open :objectsCur for select * from user_tables;
+  else if v_type ='index' then
+    open :objectsCur for select * from user_indexes;
+  
+  end if;
+end
+2
+type
+1
+'table'
+5
+objectsCur
+0
+5
+0

@@ -24,4 +24,9 @@ require('./lib.js').testAll(async t => {
   // await t("/typebind/bindNull", { none: ''});
   // await t("/typebind/bindNull", { none: 1});
   // await t("/typebind/bindNull", { none: 'y'});
+
+  // await t("/plsql/basicBind", {xing: 'Li'})
+  // await t("/plsql/cursorBind", { type: 'table', pattern: 'OSQL%' });
+  // await t("/plsql/cursorBind", { type: 'index', pattern: 'OSQL%' });
+  // await t("/plsql/cursorBind");
 });
