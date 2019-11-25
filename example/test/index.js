@@ -19,4 +19,9 @@ require('./lib.js').testAll(async t => {
 
   // await t("/storedpl/createProcedure");
   // await t("/storedpl/execProcedure?sts=1");
+
+  // await t("/typebind/bindNull");
+  // await t("/typebind/bindNull", { none: ''});
+  // await t("/typebind/bindNull", { none: 1});
+  // await t("/typebind/bindNull", { none: 'y'});
 });
