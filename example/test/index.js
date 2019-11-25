@@ -15,4 +15,7 @@ require('./lib.js').testAll(async t => {
   // await t("/dml/insertMain?custName=LiXinyan");
   // await t("/dml/updateMainReturn?tradeId=4&status=9");
   // await t("/dml/deleteMainReturn?tradeId=28");
+
+  // await t("/storedpl/createProcedure");
+  // await t("/storedpl/execProcedure?sts=1");
 });
