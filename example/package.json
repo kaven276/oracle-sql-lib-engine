@@ -4,7 +4,8 @@
   "description": "oracle sql lib example project based on oracle-sql-lib-engine",
   "main": "index.js",
   "scripts": {
-    "start": "DEBUG='osql:pools,osql:exec' node ."
+    "start": "DEBUG='osql:pools,osql:exec' node .",
+    "test": "node test"
   },
   "keywords": [],
   "author": "李勇 <kaven276@vip.sina.com>",
