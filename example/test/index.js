@@ -29,4 +29,6 @@ require('./lib.js').testAll(async t => {
   // await t("/plsql/cursorBind", { type: 'table', pattern: 'OSQL%' });
   // await t("/plsql/cursorBind", { type: 'index', pattern: 'OSQL%' });
   // await t("/plsql/cursorBind");
+  // await t("/plsql/dmlRollback", { tradeId: 41 });
+  // await t("/plsql/dmlRollback", { tradeId: 42 });
 });
