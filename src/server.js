@@ -112,7 +112,7 @@ app.use(async (ctx, next) => {
     if (sqlresult) {
       ctx.response.body = JSON.stringify({
         respCode: 0,
-        respDesc: `${m.title} - 成功`,
+        respDesc: m.title ? `${m.title} - 成功` : undefined,
         data: sqlresult,
         meta,
       }, null, 2);
