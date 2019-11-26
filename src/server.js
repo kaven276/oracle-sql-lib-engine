@@ -119,10 +119,27 @@ app.use(async (ctx, next) => {
       logger.info({ type: 'success' }, { path: m.path, req: ctx.state.req });
     }
     if (error) {
-      logger.error({ type: 'error', errorType, err: error }, { path: m.path, req: ctx.state.req });
+      error.message = error.message;
+      // error.toString will lose message, so do this
+      const err = { ...error, message: error.message || error.toString() };
+      logger.error({ type: 'error', errorType, err }, { path: m.path, req: ctx.state.req });
+      // console.dir({ ...error });
+      // console.error(error.message);
+      let errmsg;
+      if (error.errorNum === undefined) {
+        // converter exeption
+        errmsg = error.toString();
+      } else {
+        // ORA-06512 is for PL/SQL execution error
+        // https://www.techonthenet.com/oracle/errors/ora06512.php
+        // from raise_application_error, extract the useful part
+        const res = /\n?ORA-\d+: /;
+        console.error(error.message.split(res));
+        errmsg = error.message.split(res)[1];
+      }
       ctx.response.body = JSON.stringify({
-        respCode: -error.errorNum,
-        respDesc: `${m.title} - ${error.message}`,
+        respCode: -error.errorNum || -1,
+        respDesc: errmsg || error.message,
         meta: {
           ...meta,
           sqltext: internal.sqltext,
