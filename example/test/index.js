@@ -31,4 +31,11 @@ require('./lib.js').testAll(async t => {
   // await t("/plsql/cursorBind");
   // await t("/plsql/dmlRollback", { tradeId: 41 });
   // await t("/plsql/dmlRollback", { tradeId: 42 });
+
+  // await t("/dynamic/dyna", { verbose: 1, tname: 'OSQL_' });
+  // await t("/dynamic/dyna", { verbose: 0, tname: 'OSQL_' });
+  // await t("/dynamic/dyna", { verbose: 1, blocks: 1000000, orderBy: 'blocks asc' });
+  // await t("/dynamic/dyna", { tname: 'OSQL_', colname: 'a.*' });
+  // await t("/dynamic/dyna", { tname: 'OSQL_', colname: 'a.NUM_ROWS,a.BLOCKS' });
+  // await t("/dynamic/inArray", { tnames: ['OSQL_MAIN', 'OSQL_SUB'] });
 });
