@@ -38,4 +38,8 @@ require('./lib.js').testAll(async t => {
   // await t("/dynamic/dyna", { tname: 'OSQL_', colname: 'a.*' });
   // await t("/dynamic/dyna", { tname: 'OSQL_', colname: 'a.NUM_ROWS,a.BLOCKS' });
   // await t("/dynamic/inArray", { tnames: ['OSQL_MAIN', 'OSQL_SUB'] });
+
+  // await t("/ddl/createNumberArrayType");
+  // await t("/ddl/createVarchar2ArrayType");
+  // await t("/ddl/createArrayTypesPackage");
 });
