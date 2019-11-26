@@ -1,3 +1,4 @@
 /node_modules/
 /sqlnet.log
 /etc/
+*.~*
