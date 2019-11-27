@@ -64,7 +64,21 @@ async function executeSqlModule(m, reqOrigin, internal) {
   let sqlresult;
   let error;
   try {
-    sqlresult = await connection.execute(sqltext, bindObj, m.options || {});
+    if (req.many && req.many instanceof Array) {
+      const options = {
+        bindDefs: bindObj,
+        dmlRowCounts: true,
+        batchErrors: true,
+        ...m.options,
+      };
+      sqlresult = await connection.executeMany(sqltext, req.many, options);
+      // console.log('execute many');
+      // console.dir(options);
+      // console.dir(sqlresult.dmlRowCounts);
+      // console.dir(sqlresult.batchErrors);
+    } else {
+      sqlresult = await connection.execute(sqltext, bindObj, m.options || {});
+    }
   } catch (e) {
     error = e;
   }

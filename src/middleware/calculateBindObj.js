@@ -50,6 +50,17 @@ module.exports = function calculateBindObj(sqltext, req, bindObjCfg) {
           dir: oracledb.BIND_OUT,
           type: oracledb.CURSOR,
         };
+      } else if (req.many && req.many instanceof Array) { // executeMany
+        const first = req.many[0];
+        const value = extractValueByPath(first, para);
+        bindObj[para] = {
+          dir: oracledb.BIND_IN,
+          val: value,
+          type: oracledb[(typeof value).toUpperCase()], // 支持 NUMBER, STRING
+          // Error: NJS-060: type must be specified for bind
+          maxSize: 200,
+          // Error: NJS-057: maxSize must be specified and not zero for bind
+        };
       } else {
         const value = extractValueByPath(req, para);
         if (value instanceof Array) {

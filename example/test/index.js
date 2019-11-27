@@ -47,4 +47,8 @@ require('./lib.js').testAll(async t => {
   // await t("/bulk/deleteArray", { tradeIdList: [50, 51] });
   // await t("/bulk/updateArray", { tradeIdList: [48, 49], status: '5' });
   // await t("/bulk/selectInfoArray");
+
+  // await t("/dml/insertMain", { many: [{ custName: 'cust1' }, { custName: 'cust2' }] });
+  // await t("/dml/deleteMain", { many: [{ custName: 'cust1' }, { custName: 'LiXinyan' }] });
+  // await t("/dml/deleteMain", { many: [{ custName: 'cust2' }, { custName: 'LiYuze' }] });
 });
