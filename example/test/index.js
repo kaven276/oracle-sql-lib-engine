@@ -46,4 +46,5 @@ require('./lib.js').testAll(async t => {
   // await t("/bulk/insertArray", { custNames: ['LiXinyan', 'LiYuze'] });
   // await t("/bulk/deleteArray", { tradeIdList: [46, 47] });
   // await t("/bulk/updateArray", { tradeIdList: [50, 51] });
+  // await t("/bulk/selectInfoArray");
 });
