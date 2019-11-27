@@ -45,11 +45,20 @@ module.exports = function calculateBindObj(sqltext, req, bindObjCfg) {
         };
       } else {
         const value = extractValueByPath(req, para);
-        bindObj[para] = {
-          dir: oracledb.BIND_IN,
-          val: String(value),
-          // type: oracledb[(typeof value).toUpperCase()], // 支持 NUMBER, STRING
-        };
+        if (value instanceof Array) {
+          // const first = value[0];
+          // const type = oracledb[(typeof first).toUpperCase()], // 支持 NUMBER, STRING
+          bindObj[para] = {
+            dir: oracledb.BIND_IN,
+            val: value,
+          };
+        } else {
+          bindObj[para] = {
+            dir: oracledb.BIND_IN,
+            val: String(value),
+            // type: oracledb[(typeof value).toUpperCase()], // 支持 NUMBER, STRING
+          };
+        }
       }
     });
   }
