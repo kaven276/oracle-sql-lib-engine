@@ -1,6 +1,5 @@
-declare
-  tradeIdList  osqlarr.number_array:= :tradeIdList;
+
 BEGIN
-  FORALL i IN INDICES OF tradeIdList
-    delete from osql_main a where a.trade_id = tradeIdList(i);
+  FORALL i IN INDICES OF :tradeIdList
+    delete from osql_main a where a.trade_id = :tradeIdList(i);
 END;

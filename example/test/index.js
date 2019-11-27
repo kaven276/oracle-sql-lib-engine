@@ -43,8 +43,8 @@ require('./lib.js').testAll(async t => {
   // await t("/ddl/createVarchar2ArrayType");
   // await t("/ddl/createArrayTypesPackage");
 
-  // await t("/bulk/insertArray", { custNames: ['LiXinyan', 'LiYuze'] });
-  // await t("/bulk/deleteArray", { tradeIdList: [46, 47] });
-  // await t("/bulk/updateArray", { tradeIdList: [50, 51] });
+  // await t("/bulk/insertArray", { custNames: ['LiXinyan', 'LiYuze'], status: '4' });
+  // await t("/bulk/deleteArray", { tradeIdList: [50, 51] });
+  // await t("/bulk/updateArray", { tradeIdList: [48, 49], status: '5' });
   // await t("/bulk/selectInfoArray");
 });
