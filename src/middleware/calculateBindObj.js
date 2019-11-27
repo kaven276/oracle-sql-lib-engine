@@ -44,6 +44,7 @@ module.exports = function calculateBindObj(sqltext, req, bindObjCfg) {
         bindObj[para] = {
           dir: oracledb.BIND_OUT,
           type: oracledb[bindType.toUpperCase()],
+          // maxSize: 200, // default 200 for STRING, BUFFER
         };
       } else if (para.endsWith('Cur')) {
         bindObj[para] = {

@@ -51,4 +51,5 @@ require('./lib.js').testAll(async t => {
   // await t("/dml/insertMain", { many: [{ custName: 'cust1' }, { custName: 'cust2' }] });
   // await t("/dml/deleteMain", { many: [{ custName: 'cust1' }, { custName: 'LiXinyan' }] });
   // await t("/dml/deleteMain", { many: [{ custName: 'cust2' }, { custName: 'LiYuze' }] });
+  await t("/dml/updateMainReturn", { many: [{ tradeId: 54, status: '6' }, { tradeId: 41, status: '7' }] });
 });
