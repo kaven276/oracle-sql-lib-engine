@@ -24,7 +24,8 @@ async function executeSqlModule(m, reqOrigin, internal) {
   // 获取最终要执行的 SQL 文本
   const sqltext = (() => {
     if (m.sqltext instanceof Function) {
-      return m.sqltext(req);
+      // 动态 sql 中可以引用 m.xxx, m 本身
+      return m.sqltext({ ...m, ...req, m });
     }
     return m.sqltext;
   })();

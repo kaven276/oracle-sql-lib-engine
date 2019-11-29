@@ -15,7 +15,7 @@ function makeSqlGenFunc(sqltext, lines, path) {
   }, []);
   const dynamicSqlText = notCommentedLines.join("\n");
 
-  const sqlFuncParamNames = [];
+  const sqlFuncParamNames = ['m'];
   // match :name
   const match = sqltext.match(/(?::)\w{3,}/gm);
   if (match) {
