@@ -79,6 +79,14 @@ async function executeSqlModule(m, reqOrigin, internal) {
     } else {
       sqlresult = await connection.execute(sqltext, bindObj, m.options || {});
     }
+    // update/delete without where detection, raise exception and automatically rollback
+    if (sqlresult.rowsAffected && sqlresult.rowsAffected >= cfg.DMLNoWhereCheckThres) {
+      // console.log([sqltext, cfg.DMLNoWhereCheckThres, sqltext.match(/(delete|update)/ig), sqltext.match(/where/i)]);
+      if (sqltext.match(/(delete|update)/ig) && !sqltext.match(/where/i)) {
+        sqlresult = undefined;
+        throw new Error('delete|update without where filter');
+      }
+    }
   } catch (e) {
     error = e;
   }

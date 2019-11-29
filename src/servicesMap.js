@@ -8,6 +8,14 @@ const sqlparser = require('./sqlParser.js');
 const registry = {};
 const rootDir = cfg.dirServices || join(__dirname, '../services/');
 
+function checkDangerousSqlText(m) {
+  if (!m.sqltext) return;
+  const sqltext = (m.sqltext instanceof Function) ? m.sqltext.toString() : m.sqltext;
+  if (sqltext.match(/(delete|update)/ig) && !sqltext.match(/where/ig)) {
+    m.staticError = 'delete|update without where filter';
+  }
+}
+
 function loadSqlFile(m, registryKey) {
   const path = `${registryKey}.sql`;
   const nojs = !m || m.sqlOnly;
@@ -65,6 +73,7 @@ function loadSqlFile(m, registryKey) {
       // static sql (but may use bind)
       m.sqltext = sqlparser.stripSqlComment(sql, sqlLines);
     }
+    checkDangerousSqlText(m);
     if (!m.pool) {
       m.pool = cfg.defaultPoolName || registryKey.split('/')[1]; // 默认路径第一部分就是pool名称
     }
@@ -82,8 +91,9 @@ function checkAndRegisterModule(m, path, oper) {
     errorCount += 1;
     console.warn(`${path} 没有 title`);
   }
-  // 检查必要属性是否齐全
+  // 检查 sqltext 是否存在 delete/update without where 的情况
   m.sqltext = m.sqltext || m.sql; // 写成 sql 或者 sqltext 都行
+  checkDangerousSqlText(m);
   m.pool = m.pool || cfg.defaultPoolName || path.split('/')[1];
   const flagLoadSqlFile = !m.sqltext;
   if (!m.sqltext) {
