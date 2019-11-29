@@ -6,6 +6,7 @@ const debug = require('debug')('osql:services');
 const sqlparser = require('./sqlParser.js');
 
 const registry = {};
+const dirMap = new Map();
 const rootDir = cfg.dirServices || join(__dirname, '../services/');
 
 function checkDangerousSqlText(m) {
@@ -14,6 +15,16 @@ function checkDangerousSqlText(m) {
   if (sqltext.match(/(delete|update)/ig) && !sqltext.match(/where/ig)) {
     m.staticError = 'delete|update without where filter';
   }
+}
+
+// add prototype chain of dirConfig
+function registerModuleWithPrototype(path, m) {
+  checkDangerousSqlText(m);
+  const upPath = path.substr(1, path.lastIndexOf('/') - 1);
+  const upConfig = dirMap.get(upPath);
+  const sqlConfig = Object.create(upConfig);
+  Object.assign(sqlConfig, m);
+  registry[path] = sqlConfig;
 }
 
 function loadSqlFile(m, registryKey) {
@@ -25,7 +36,6 @@ function loadSqlFile(m, registryKey) {
       path: registryKey,
       sqlOnly: true,
     };
-    registry[registryKey] = m;
   }
   fs.readFile(rootDir + path, { encoding: 'utf8' }, (err, sql) => {
     if (err) {
@@ -73,10 +83,7 @@ function loadSqlFile(m, registryKey) {
       // static sql (but may use bind)
       m.sqltext = sqlparser.stripSqlComment(sql, sqlLines);
     }
-    checkDangerousSqlText(m);
-    if (!m.pool) {
-      m.pool = cfg.defaultPoolName || registryKey.split('/')[1]; // 默认路径第一部分就是pool名称
-    }
+    registerModuleWithPrototype(registryKey, m);
   });
 }
 
@@ -93,15 +100,52 @@ function checkAndRegisterModule(m, path, oper) {
   }
   // 检查 sqltext 是否存在 delete/update without where 的情况
   m.sqltext = m.sqltext || m.sql; // 写成 sql 或者 sqltext 都行
-  checkDangerousSqlText(m);
-  m.pool = m.pool || cfg.defaultPoolName || path.split('/')[1];
   const flagLoadSqlFile = !m.sqltext;
   if (!m.sqltext) {
     loadSqlFile(m, path);
   }
   if (errorCount === 0) {
-    registry[path] = m;
+    registerModuleWithPrototype(path, m);
     debug(`${oper} ${path} ${flagLoadSqlFile ? ' (load sql file)' : ''}`);
+  }
+}
+
+// path is like level1/level2, not start with /
+function loadDirConfig(path) {
+  // create prototype chains for dirConfig
+  let dirConfig;
+  if (path === '') {
+    dirConfig = Object.create({ // root osql.config.js inherit cfg.js
+      pool: cfg.defaultPoolName,
+    });
+  } else {
+    const upPath = path.substr(0, path.lastIndexOf('/'));
+    const upDirConfig = dirMap.get(upPath);
+    dirConfig = Object.create(upDirConfig);
+  }
+  dirMap.set(path, dirConfig);
+}
+
+// give osql.config.js path, update its dirConfig
+// path is like level1/level2, not start with /
+function updateDirConfig(path, event) {
+  let config;
+  const cfgPath = `${rootDir + path}`;
+  if (require.cache[cfgPath]) {
+    delete require.cache[cfgPath];
+  }
+  try {
+    config = require(cfgPath);
+    const dirPath = path.substr(0, path.lastIndexOf('/'));
+    const dirConfig = dirMap.get(dirPath);
+    if (event === 'change' || event === 'unlink') {
+      for (const n of Object.keys(dirConfig)) {
+        delete dirConfig[n];
+      }
+    }
+    Object.assign(dirConfig, config);
+  } catch (e) {
+    console.error('load oql.config.js error', e);
   }
 }
 
@@ -114,6 +158,14 @@ chokidar
   })
   .on('all', (event, path) => {
     // console.log(event, path);
+    if (event === 'addDir') {
+      loadDirConfig(path);
+      return;
+    }
+    if (path.match(/osql\.config\.js$/)) {
+      updateDirConfig(path, event);
+      return;
+    }
     if (!path.match(/\.(js|sql)$/)) return;
     const requirePath = rootDir + path;
     const registryKey = `/${path
@@ -131,7 +183,6 @@ chokidar
             loadSqlFile(null, registryKey);
           } else {
             // 有对应的 .js，那就等着他重新再级联加载自己
-
           }
         });
       } else {
@@ -177,7 +228,5 @@ chokidar
       default:
     }
   });
-
-// setTimeout(() => console.log(Object.keys(registry)), 3000);
 
 exports.registry = registry;

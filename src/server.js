@@ -10,6 +10,7 @@ const { default: logger } = require('./logger.js');
 const converterMap = require('./convertsMap.js');
 const { registry } = require('./servicesMap.js');
 const adminService = require('./middleware/adminService.js');
+const checkModule = require('./middleware/checkModule.js');
 const executeSqlModule = require('./executeSqlModule.js');
 
 const statsMap = {};
@@ -71,6 +72,9 @@ app.use(async (ctx, next) => {
   ctx.state.m = m;
   await next();
 });
+
+// 模块定义静态检查
+app.use(checkModule);
 
 app.use(async (ctx, next) => {
   const m = ctx.state.m;
