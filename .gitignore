@@ -2,3 +2,4 @@
 /sqlnet.log
 /etc/
 *.~*
+/src/expr/
