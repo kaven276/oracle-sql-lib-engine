@@ -103,10 +103,18 @@ async function executeSqlModule(m, reqOrigin, internal) {
       await connection.commit();
     }
     await connection.release(); // 处理完响应第一时间释放连
-    if (m.outConverter && typeof m.outConverter === 'function') {
-      // outConverter 可以直接修改 sqlresult 内容，而不返回新的 sqlresult 对象
+    if (m.outConverter) {
+      let outConverter;
+      if (typeof m.outConverter === 'function') {
+        outConverter = m.outConverter;
+      } else if (typeof m.outConverter === 'string') {
+        outConverter = m[m.outConverter];
+      }
       try {
-        sqlresult = m.outConverter(sqlresult, req) || sqlresult;
+        if (outConverter) {
+          // outConverter 可以直接修改 sqlresult 内容，而不返回新的 sqlresult 对象
+          sqlresult = outConverter(sqlresult, req, m) || sqlresult;
+        }
       } catch (e) {
         returnResult = {
           error: e,

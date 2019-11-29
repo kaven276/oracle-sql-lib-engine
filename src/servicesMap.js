@@ -57,15 +57,15 @@ function loadSqlFile(m, registryKey) {
           const key = match2[1];
           const value = match2[2].trim();
           if (key.match(/^(in|out)Converter$/)) {
-            if (value.startsWith('(') || 1) { // -- outConverter: () => {}
+            if (value.startsWith('(')) { // -- outConverter: () => {}
               try {
                 // eslint-disable-next-line no-eval
                 m[key] = eval(value);
               } catch (e) {
-                console.error(`path(${path}) outConverter eval error ${e}`);
+                console.error(`path(${path}) value=${value} outConverter eval error ${e}`);
               }
-            } else { // -- outConverter: registered converter module path
-              m[key] = require(value);
+            } else { // -- outConverter: point to osql.config.js exports.key
+              m[key] = value; // (sqlResult, req, m) => {}
             }
           } else {
             m[key] = value;
