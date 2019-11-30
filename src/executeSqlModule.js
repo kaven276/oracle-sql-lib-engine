@@ -34,7 +34,10 @@ async function executeSqlModule(m, reqOrigin, internal) {
   const sqltext = (() => {
     if (m.sqltext instanceof Function) {
       // 动态 sql 中可以引用 m.xxx, m 本身
-      return m.sqltext({ ...m, ...req, m });
+      const {
+        pool, title, desc, path, inConverter, outConverter, ...restExports
+      } = m;
+      return m.sqltext({ ...restExports, ...req, m });
     }
     return m.sqltext;
   })();
