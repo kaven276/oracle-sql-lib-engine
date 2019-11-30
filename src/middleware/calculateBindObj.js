@@ -1,18 +1,18 @@
 // pure Function
-function extractValueByPath(obj, path) {
+function extractValueByPath(obj, path, m) {
   const sects = path.split('__');
   let current = obj;
   for (const sect of sects) {
     current = current[sect];
   }
   if (current === undefined) {
-    return '';
+    return m[path] || '';
   }
   return current;
 }
 
 // 根据 SQL 文本，静态配置的 bindObj，带入请求参数，形成最终执行用 bindObj
-module.exports = function calculateBindObj(sqltext, req, bindObjCfg) {
+module.exports = function calculateBindObj(sqltext, req, bindObjCfg, m) {
   const bindObj = {};
   // console.log(1, sqltext.match(/:\w{3,}/gm));
   const match = sqltext.match(/(?::)\w{3,}/gm);
@@ -28,7 +28,7 @@ module.exports = function calculateBindObj(sqltext, req, bindObjCfg) {
             break;
           case oracledb.BIND_IN:
           case oracledb.BIND_INOUT:
-            bindObj[para] = { ...bindCfg, val: extractValueByPath(req, para) };
+            bindObj[para] = { ...bindCfg, val: extractValueByPath(req, param, m) };
             break;
           default:
         }
@@ -53,7 +53,7 @@ module.exports = function calculateBindObj(sqltext, req, bindObjCfg) {
         };
       } else if (req.many && req.many instanceof Array) { // executeMany
         const first = req.many[0];
-        const value = extractValueByPath(first, para);
+        const value = extractValueByPath(first, para, m);
         bindObj[para] = {
           dir: oracledb.BIND_IN,
           val: value,
@@ -63,7 +63,7 @@ module.exports = function calculateBindObj(sqltext, req, bindObjCfg) {
           // Error: NJS-057: maxSize must be specified and not zero for bind
         };
       } else {
-        const value = extractValueByPath(req, para);
+        const value = extractValueByPath(req, para, m);
         if (value instanceof Array) {
           // const first = value[0];
           // const type = oracledb[(typeof first).toUpperCase()], // 支持 NUMBER, STRING

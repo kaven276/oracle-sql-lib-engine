@@ -41,7 +41,7 @@ async function executeSqlModule(m, reqOrigin, internal) {
   internal.sqltext = sqltext;
 
   // 根据原始 sql 文本，里面的绑定参数，请求，和配置的绑定对象，计算中最终用于执行的绑定对象
-  const bindObj = calculateBindObj(sqltext, req, m.bindObj);
+  const bindObj = calculateBindObj(sqltext, req, m.bindObj, m);
   internal.bindObj = bindObj;
 
   debugSqlExec('path', m.path);
