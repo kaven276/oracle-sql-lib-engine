@@ -55,4 +55,9 @@ require('./lib.js').testAll(async t => {
 
   // await t("/exception/deleteNoWhere");
   // await t("/exception/updateNoWhere");
+
+  // await t("/level0/level0");
+  // await t("/level0/level1/level1");
+  // await t("/level0/level1/level2/level2?name=123");
+  // await t("/level0/level1/level2/level2");
 });
