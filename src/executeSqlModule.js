@@ -13,9 +13,18 @@ const { ConnectionTimeSlowThres, ExecutionTimeSlowThres } = cfg;
 async function executeSqlModule(m, reqOrigin, internal) {
   // 获取最终的请求，也即转换后的请求
   const req = (() => {
-    if (m.inConverter && typeof m.inConverter === 'function') {
+    let inConverter;
+    if (m.inConverter) {
+      if (typeof m.inConverter === 'function') {
+        inConverter = m.inConverter;
+      } else if (typeof m.inConverter === 'string') {
+        inConverter = m[m.inConverter];
+        console.log('inConverter', inConverter);
+      }
+    }
+    if (inConverter) {
       // inConverter 可以直接修改 req 内容，而不返回新的 req 对象
-      return m.inConverter(reqOrigin) || reqOrigin;
+      return inConverter(reqOrigin) || reqOrigin;
     }
     return reqOrigin;
   })();
