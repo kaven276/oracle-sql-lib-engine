@@ -19,12 +19,11 @@ async function executeSqlModule(m, reqOrigin, internal) {
         inConverter = m.inConverter;
       } else if (typeof m.inConverter === 'string') {
         inConverter = m[m.inConverter];
-        console.log('inConverter', inConverter);
       }
     }
     if (inConverter) {
       // inConverter 可以直接修改 req 内容，而不返回新的 req 对象
-      return inConverter(reqOrigin) || reqOrigin;
+      return inConverter(reqOrigin, m) || reqOrigin;
     }
     return reqOrigin;
   })();

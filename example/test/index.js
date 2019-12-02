@@ -62,4 +62,11 @@ require('./lib.js').testAll(async t => {
   // await t("/level0/level1/level1");
   // await t("/level0/level1/level2/level2?name=123");
   // await t("/level0/level1/level2/level2");
+
+  // await t("/converters/outConverter");
+  // await t("/converters/outConverter", { blocks: 1000000 })
+  // await t("/converters/inConvNewReq", { tprefix: 'osql' });
+  // await t("/converters/inConvModReq", { tprefix: 'osql' });
+  // await t("/converters/inConvModReqWithCfg");
+  // await t("/converters/inConvInConfig");
 });
