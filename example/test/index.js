@@ -54,7 +54,8 @@ require('./lib.js').testAll(async t => {
   // await t("/dml/deleteMain", { many: [{ custName: 'cust1' }, { custName: 'LiXinyan' }] });
   // await t("/dml/deleteMain", { many: [{ custName: 'cust2' }, { custName: 'LiYuze' }] });
   // await t("/dml/updateMainReturn", { many: [{ tradeId: 54, status: '6' }, { tradeId: 41, status: '7' }] });
-
+  // executeMany cannot be used for queries. the test at next line will report error
+  // await t('/query/selectMainInto', { many: [{ custName: 'LiXinyan' }, { custName: 'LiYuze' }] });
   // await t("/exception/deleteNoWhere");
   // await t("/exception/updateNoWhere");
 
