@@ -37,7 +37,7 @@ module.exports = function calculateBindObj(sqltext, req, bindObjCfg, m) {
         bindObj[para] = {
           dir: oracledb.BIND_OUT,
           type: oracledb[bindType.toUpperCase()],
-          maxArraySize: 10,
+          maxArraySize: 100,
         };
       } else if (para.match(/Out/)) {
         const bindType = para.replace(/^(\w+)Out(\w*)$/, '$2') || 'DEFAULT';
