@@ -81,7 +81,7 @@ async function executeSqlModule(m, reqOrigin, internal) {
       const options = {
         bindDefs: bindObj,
         dmlRowCounts: true,
-        batchErrors: true,
+        batchErrors: false, // ensure transaction
         ...m.options,
       };
       sqlresult = await connection.executeMany(sqltext, req.many, options);
