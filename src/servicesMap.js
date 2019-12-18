@@ -88,6 +88,25 @@ function loadSqlFile(m, registryKey) {
   });
 }
 
+function processSqlFile(pp) {
+  const registryKey = Path.join('/', pp.dir, pp.name);
+  const atomService = registry[registryKey];
+  if (!atomService || atomService.sqlOnly) {
+    // 看看是否是独立 sql file，没有对应的 js file
+    const jsFilePath = Path.join(rootDir, `${pp.name}.js`);
+    fs.access(jsFilePath, fs.constants.R_OK, (err) => {
+      if (err) {
+        // 没有对应的 js 文件，也就是独立 sql，创造一个虚拟 js 模块，配置从 .sql 文件头部的注释中取
+        loadSqlFile(null, registryKey);
+      } else {
+        // 有对应的 .js，那就等着他重新再级联加载自己
+      }
+    });
+  } else {
+    loadSqlFile(atomService, registryKey);
+  }
+}
+
 function checkAndRegisterModule(m, path, oper) {
   let errorCount = 0;
   if (m.path !== path) {
@@ -108,6 +127,50 @@ function checkAndRegisterModule(m, path, oper) {
   if (errorCount === 0) {
     registerModuleWithPrototype(path, m);
     debug(`${oper} ${path} ${flagLoadSqlFile ? ' (load sql file)' : ''}`);
+  }
+}
+
+
+function processJsFile(pp, path, event) {
+  const registryKey = Path.join('/', pp.dir, pp.name);
+  const requirePath = Path.join(rootDir, path);
+  let absPath;
+  let atomService;
+  switch (event) {
+    case 'add':
+      try {
+        atomService = require(requirePath);
+      } catch (e) {
+        console.error('module init hot reload error', path, e);
+        return;
+      }
+      checkAndRegisterModule(atomService, registryKey, 'register');
+      break;
+    case 'change':
+      absPath = require.resolve(requirePath);
+      if (absPath) {
+        delete require.cache[absPath];
+      } else {
+        console.log('no absPath');
+      }
+      try {
+        atomService = require(requirePath);
+      } catch (e) {
+        console.error('module change hot reload error', path, e);
+        return;
+      }
+      checkAndRegisterModule(atomService, registryKey, 'upgrade');
+      break;
+    case 'unlink':
+      absPath = require.resolve(requirePath);
+      if (absPath) {
+        delete require.cache[absPath];
+      } else {
+        console.log('no absPath');
+      }
+      delete registry[registryKey];
+      break;
+    default:
   }
 }
 
@@ -163,72 +226,13 @@ chokidar
       loadDirConfig(path);
       return;
     }
-
     const pp = Path.parse(path); // pp is parsed path
-    const registryKey = Path.join('/', pp.dir, pp.name);
-    let atomService;
-
     if (pp.base === 'osql.config.js') {
       updateDirConfig(path, event);
-      return;
     } else if (pp.ext === '.sql') {
-      atomService = registry[registryKey];
-      if (!atomService || atomService.sqlOnly) {
-        // 看看是否是独立 sql file，没有对应的 js file
-        const jsFilePath = Path.join(rootDir, `${pp.name}.js`);
-        fs.access(jsFilePath, fs.constants.R_OK, (err) => {
-          if (err) {
-            // 没有对应的 js 文件，也就是独立 sql，创造一个虚拟 js 模块，配置从 .sql 文件头部的注释中取
-            loadSqlFile(null, registryKey);
-          } else {
-            // 有对应的 .js，那就等着他重新再级联加载自己
-          }
-        });
-      } else {
-        loadSqlFile(atomService, registryKey);
-      }
-      return;
-    } else if (pp.ext !== '.js') {
-      return;
-    }
-
-    const requirePath = Path.join(rootDir, path);
-    let absPath;
-    switch (event) {
-      case 'add':
-        try {
-          atomService = require(requirePath);
-        } catch (e) {
-          console.error('module init hot reload error', path, e);
-          return;
-        }
-        checkAndRegisterModule(atomService, registryKey, 'register');
-        break;
-      case 'change':
-        absPath = require.resolve(requirePath);
-        if (absPath) {
-          delete require.cache[absPath];
-        } else {
-          console.log('no absPath');
-        }
-        try {
-          atomService = require(requirePath);
-        } catch (e) {
-          console.error('module change hot reload error', path, e);
-          return;
-        }
-        checkAndRegisterModule(atomService, registryKey, 'upgrade');
-        break;
-      case 'unlink':
-        absPath = require.resolve(requirePath);
-        if (absPath) {
-          delete require.cache[absPath];
-        } else {
-          console.log('no absPath');
-        }
-        delete registry[registryKey];
-        break;
-      default:
+      processSqlFile(pp);
+    } else if (pp.ext === '.js') {
+      processJsFile(pp, path, event);
     }
   });
 
