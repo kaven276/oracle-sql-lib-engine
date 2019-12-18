@@ -194,20 +194,18 @@ function loadDirConfig(path, pp) {
 function updateDirConfig(pp, path, event) {
   let config;
   const cfgPath = Path.join(rootDir, path);
-  if (require.cache[cfgPath]) {
+  if (event !== 'add' || require.cache[cfgPath]) {
     delete require.cache[cfgPath];
   }
-  try {
-    config = require(cfgPath);
-    const dirConfig = dirMap.get(pp.dir);
-    if (event === 'change' || event === 'unlink') {
-      for (const n of Object.keys(dirConfig)) {
-        delete dirConfig[n];
-      }
+  const dirConfig = dirMap.get(pp.dir);
+  if (event === 'change' || event === 'unlink') {
+    for (const n of Object.keys(dirConfig)) {
+      delete dirConfig[n];
     }
+  }
+  if (event === 'add' || event === 'change') {
+    config = require(cfgPath);
     Object.assign(dirConfig, config);
-  } catch (e) {
-    console.error('load oql.config.js error', e);
   }
 }
 
