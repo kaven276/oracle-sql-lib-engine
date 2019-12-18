@@ -1,6 +1,6 @@
 {
   "name": "oracle-sql-lib-engine",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "sql file as module and service",
   "main": "index.js",
   "repository": "kaven276/oracle-sql-lib-engine",
