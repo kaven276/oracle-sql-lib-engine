@@ -175,7 +175,7 @@ function processJsFile(pp, path, event) {
 }
 
 // path is like level1/level2, not start with /
-function loadDirConfig(path) {
+function loadDirConfig(path, pp) {
   // create prototype chains for dirConfig
   let dirConfig;
   if (path === '') {
@@ -183,8 +183,7 @@ function loadDirConfig(path) {
       pool: cfg.defaultPoolName,
     });
   } else {
-    const upPath = path.substr(0, path.lastIndexOf('/'));
-    const upDirConfig = dirMap.get(upPath);
+    const upDirConfig = dirMap.get(pp.dir);
     dirConfig = Object.create(upDirConfig);
   }
   dirMap.set(path, dirConfig);
@@ -222,12 +221,10 @@ chokidar
   })
   .on('all', (event, path) => {
     // console.log(event, path);
-    if (event === 'addDir') {
-      loadDirConfig(path);
-      return;
-    }
     const pp = Path.parse(path); // pp is parsed path
-    if (pp.base === 'osql.config.js') {
+    if (event === 'addDir') {
+      loadDirConfig(path, pp);
+    } else if (pp.base === 'osql.config.js') {
       updateDirConfig(path, event);
     } else if (pp.ext === '.sql') {
       processSqlFile(pp);
