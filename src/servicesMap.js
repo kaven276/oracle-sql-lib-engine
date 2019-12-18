@@ -38,7 +38,8 @@ function loadSqlFile(m, registryKey) {
       sqlOnly: true,
     };
   }
-  fs.readFile(rootDir + path, { encoding: 'utf8' }, (err, sql) => {
+  const sqlFilePath = Path.join(rootDir, path);
+  fs.readFile(sqlFilePath, { encoding: 'utf8' }, (err, sql) => {
     if (err) {
       console.error(`load ${path} sql file error`);
       console.error(err);
