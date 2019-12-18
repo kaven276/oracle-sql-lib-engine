@@ -1,5 +1,6 @@
 const cfg = require('./cfg.js');
 const chokidar = require('chokidar');
+const Path = require('path');
 const { join } = require('path');
 const fs = require('fs');
 const debug = require('debug')('osql:services');
@@ -167,17 +168,17 @@ chokidar
       return;
     }
     if (!path.match(/\.(js|sql)$/)) return;
-    const requirePath = rootDir + path;
-    const registryKey = `/${path
-      .replace(/\.(js|sql)$/, '')
-      .replace(/\\/g, '/')}`;
+    const requirePath = Path.join(rootDir, path);
+    const pp = Path.parse(path); // pp is parsed path
+    const registryKey = Path.join('/', pp.dir, pp.name);
     let atomService;
     let absPath;
-    if (path.match(/\.sql$/)) {
+    if (pp.ext === '.sql') {
       atomService = registry[registryKey];
       if (!atomService || atomService.sqlOnly) {
         // 看看是否是独立 sql file，没有对应的 js file
-        fs.access(`${rootDir + registryKey}.js`, fs.constants.R_OK, (err) => {
+        const jsFilePath = Path.join(rootDir, `${pp.name}.js`);
+        fs.access(jsFilePath, fs.constants.R_OK, (err) => {
           if (err) {
             // 没有对应的 js 文件，也就是独立 sql，创造一个虚拟 js 模块，配置从 .sql 文件头部的注释中取
             loadSqlFile(null, registryKey);
