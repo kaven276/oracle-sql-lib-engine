@@ -191,16 +191,15 @@ function loadDirConfig(path, pp) {
 
 // give osql.config.js path, update its dirConfig
 // path is like level1/level2, not start with /
-function updateDirConfig(path, event) {
+function updateDirConfig(pp, path, event) {
   let config;
-  const cfgPath = `${rootDir + path}`;
+  const cfgPath = Path.join(rootDir, path);
   if (require.cache[cfgPath]) {
     delete require.cache[cfgPath];
   }
   try {
     config = require(cfgPath);
-    const dirPath = path.substr(0, path.lastIndexOf('/'));
-    const dirConfig = dirMap.get(dirPath);
+    const dirConfig = dirMap.get(pp.dir);
     if (event === 'change' || event === 'unlink') {
       for (const n of Object.keys(dirConfig)) {
         delete dirConfig[n];
@@ -225,7 +224,7 @@ chokidar
     if (event === 'addDir') {
       loadDirConfig(path, pp);
     } else if (pp.base === 'osql.config.js') {
-      updateDirConfig(path, event);
+      updateDirConfig(pp, path, event);
     } else if (pp.ext === '.sql') {
       processSqlFile(pp);
     } else if (pp.ext === '.js') {
