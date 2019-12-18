@@ -130,47 +130,27 @@ function checkAndRegisterModule(m, path, oper) {
   }
 }
 
-
 function processJsFile(pp, path, event) {
   const registryKey = Path.join('/', pp.dir, pp.name);
   const requirePath = Path.join(rootDir, path);
   let absPath;
   let atomService;
-  switch (event) {
-    case 'add':
-      try {
-        atomService = require(requirePath);
-      } catch (e) {
-        console.error('module init hot reload error', path, e);
-        return;
-      }
-      checkAndRegisterModule(atomService, registryKey, 'register');
-      break;
-    case 'change':
-      absPath = require.resolve(requirePath);
-      if (absPath) {
-        delete require.cache[absPath];
-      } else {
-        console.log('no absPath');
-      }
-      try {
-        atomService = require(requirePath);
-      } catch (e) {
-        console.error('module change hot reload error', path, e);
-        return;
-      }
-      checkAndRegisterModule(atomService, registryKey, 'upgrade');
-      break;
-    case 'unlink':
-      absPath = require.resolve(requirePath);
-      if (absPath) {
-        delete require.cache[absPath];
-      } else {
-        console.log('no absPath');
-      }
-      delete registry[registryKey];
-      break;
-    default:
+  if (event === 'change' || event === 'unlink') {
+    absPath = require.resolve(requirePath);
+    if (absPath) {
+      delete require.cache[absPath];
+    } else {
+      console.log('no absPath');
+    }
+  }
+  if (event === 'change' || event === 'add') {
+    try {
+      atomService = require(requirePath);
+    } catch (e) {
+      console.error('module init hot reload error', event, path, e);
+      return;
+    }
+    checkAndRegisterModule(atomService, registryKey, 'register');
   }
 }
 
