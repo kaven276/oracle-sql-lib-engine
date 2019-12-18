@@ -7,7 +7,6 @@ const qs = require('qs');
 global.sql = require('./sql.js');
 
 const { default: logger } = require('./logger.js');
-const converterMap = require('./convertsMap.js');
 const { registry } = require('./servicesMap.js');
 const adminService = require('./middleware/adminService.js');
 const checkModule = require('./middleware/checkModule.js');
@@ -17,7 +16,6 @@ const statsMap = {};
 
 const app = new Koa();
 global.oracledb = oracledb;
-global.converters = converterMap;
 
 // 如果是 content-type:text/* 则强制认为是 application/json
 // 避免浏览器直接发 application/json 造成 Preflighted requests
