@@ -171,7 +171,6 @@ chokidar
     const pp = Path.parse(path); // pp is parsed path
     const registryKey = Path.join('/', pp.dir, pp.name);
     let atomService;
-    let absPath;
     if (pp.ext === '.sql') {
       atomService = registry[registryKey];
       if (!atomService || atomService.sqlOnly) {
@@ -192,6 +191,7 @@ chokidar
     }
 
     const requirePath = Path.join(rootDir, path);
+    let absPath;
     switch (event) {
       case 'add':
         try {
