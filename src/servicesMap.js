@@ -168,7 +168,6 @@ chokidar
       return;
     }
     if (!path.match(/\.(js|sql)$/)) return;
-    const requirePath = Path.join(rootDir, path);
     const pp = Path.parse(path); // pp is parsed path
     const registryKey = Path.join('/', pp.dir, pp.name);
     let atomService;
@@ -192,6 +191,7 @@ chokidar
       return;
     }
 
+    const requirePath = Path.join(rootDir, path);
     switch (event) {
       case 'add':
         try {
