@@ -167,10 +167,10 @@ chokidar
       updateDirConfig(path, event);
       return;
     }
-    if (!path.match(/\.(js|sql)$/)) return;
     const pp = Path.parse(path); // pp is parsed path
     const registryKey = Path.join('/', pp.dir, pp.name);
     let atomService;
+
     if (pp.ext === '.sql') {
       atomService = registry[registryKey];
       if (!atomService || atomService.sqlOnly) {
@@ -189,6 +189,8 @@ chokidar
       }
       return;
     }
+
+    if (pp.ext !== '.js') return;
 
     const requirePath = Path.join(rootDir, path);
     let absPath;
