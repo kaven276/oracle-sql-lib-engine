@@ -163,15 +163,15 @@ chokidar
       loadDirConfig(path);
       return;
     }
-    if (path.match(/osql\.config\.js$/)) {
-      updateDirConfig(path, event);
-      return;
-    }
+
     const pp = Path.parse(path); // pp is parsed path
     const registryKey = Path.join('/', pp.dir, pp.name);
     let atomService;
 
-    if (pp.ext === '.sql') {
+    if (pp.base === 'osql.config.js') {
+      updateDirConfig(path, event);
+      return;
+    } else if (pp.ext === '.sql') {
       atomService = registry[registryKey];
       if (!atomService || atomService.sqlOnly) {
         // 看看是否是独立 sql file，没有对应的 js file
@@ -188,9 +188,9 @@ chokidar
         loadSqlFile(atomService, registryKey);
       }
       return;
+    } else if (pp.ext !== '.js') {
+      return;
     }
-
-    if (pp.ext !== '.js') return;
 
     const requirePath = Path.join(rootDir, path);
     let absPath;
