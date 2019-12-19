@@ -144,7 +144,7 @@ function processSqlFile(pp) {
   const atomService = registry[registryKey];
   if (!atomService || atomService.sqlOnly) {
     // 看看是否是独立 sql file，没有对应的 js file
-    const jsFilePath = Path.join(rootDir, `${pp.name}.js`);
+    const jsFilePath = Path.join(rootDir, `${registryKey}.js`);
     fs.access(jsFilePath, fs.constants.R_OK, (err) => {
       if (err) {
         // 没有对应的 js 文件，也就是独立 sql，创造一个虚拟 js 模块，配置从 .sql 文件头部的注释中取
