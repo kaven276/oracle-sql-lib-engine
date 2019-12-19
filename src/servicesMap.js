@@ -10,6 +10,41 @@ const registry = {}; // /dir/dir2/file => {}, posix sep
 const dirMap = new Map(); // dir1/dir2 => {}, posix / sep
 const rootDir = cfg.dirServices || join(__dirname, '../services/');
 
+// path is like level1/level2, not start with /
+function loadDirConfig(path, pp) {
+  // create prototype chains for dirConfig
+  let dirConfig;
+  if (path === '') {
+    dirConfig = Object.create({ // root osql.config.js inherit cfg.js
+      pool: cfg.defaultPoolName,
+    });
+  } else {
+    const upDirConfig = dirMap.get(pp.dir);
+    dirConfig = Object.create(upDirConfig);
+  }
+  dirMap.set(path, dirConfig);
+}
+
+// give osql.config.js path, update its dirConfig
+// path is like level1/level2, not start with /
+function updateDirConfig(pp, path, event) {
+  let config;
+  const cfgPath = Path.join(rootDir, path);
+  if (event !== 'add' || require.cache[cfgPath]) {
+    delete require.cache[cfgPath];
+  }
+  const dirConfig = dirMap.get(pp.dir);
+  if (event === 'change' || event === 'unlink') {
+    for (const n of Object.keys(dirConfig)) {
+      delete dirConfig[n];
+    }
+  }
+  if (event === 'add' || event === 'change') {
+    config = require(cfgPath);
+    Object.assign(dirConfig, config);
+  }
+}
+
 function checkDangerousSqlText(m) {
   if (!m.sqltext) return;
   const sqltext = (m.sqltext instanceof Function) ? m.sqltext.toString() : m.sqltext;
@@ -157,41 +192,6 @@ function processJsFile(pp, path, event) {
       return;
     }
     checkAndRegisterModule(atomService, registryKey, 'register');
-  }
-}
-
-// path is like level1/level2, not start with /
-function loadDirConfig(path, pp) {
-  // create prototype chains for dirConfig
-  let dirConfig;
-  if (path === '') {
-    dirConfig = Object.create({ // root osql.config.js inherit cfg.js
-      pool: cfg.defaultPoolName,
-    });
-  } else {
-    const upDirConfig = dirMap.get(pp.dir);
-    dirConfig = Object.create(upDirConfig);
-  }
-  dirMap.set(path, dirConfig);
-}
-
-// give osql.config.js path, update its dirConfig
-// path is like level1/level2, not start with /
-function updateDirConfig(pp, path, event) {
-  let config;
-  const cfgPath = Path.join(rootDir, path);
-  if (event !== 'add' || require.cache[cfgPath]) {
-    delete require.cache[cfgPath];
-  }
-  const dirConfig = dirMap.get(pp.dir);
-  if (event === 'change' || event === 'unlink') {
-    for (const n of Object.keys(dirConfig)) {
-      delete dirConfig[n];
-    }
-  }
-  if (event === 'add' || event === 'change') {
-    config = require(cfgPath);
-    Object.assign(dirConfig, config);
   }
 }
 
