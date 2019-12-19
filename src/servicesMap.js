@@ -146,7 +146,7 @@ function loadSqlFile(m, registryKey, from) {
 
 // filepath to registry key consider posix or win32
 const computeRegKey = (pp) => ((Path.sep === '\\') ?
-  Path.join('/', pp.dir, pp.name).replace(/\\/g, '.') :
+  Path.join('/', pp.dir, pp.name).replace(/\\/g, '/') :
   Path.join('/', pp.dir, pp.name));
 
 function processSqlFile(pp) {
