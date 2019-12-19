@@ -64,7 +64,16 @@ function checkDangerousSqlText(m) {
 }
 
 // add prototype chain of dirConfig
-function registerModuleWithPrototype(registryKey, m) {
+function registerModuleWithPrototype(registryKey, m, from) {
+  if (m.path !== registryKey) {
+    console.warn(`文件路径${registryKey}和 exports.path(${m.path}) 不一致`);
+    process.exit(-3);
+  }
+  // 检查必要属性是否齐全
+  if (!m.title) {
+    console.warn(`${registryKey} by ${from} 没有 title`);
+  }
+  debug(`${registryKey} loaded}`);
   checkDangerousSqlText(m);
   const upPath = Path.dirname(registryKey).substr(1);
   const upConfig = dirMap.get(upPath);
@@ -73,10 +82,11 @@ function registerModuleWithPrototype(registryKey, m) {
   registry[registryKey] = sqlConfig;
 }
 
-function loadSqlFile(m, registryKey) {
+// called from processJsFile and processSqlFile
+function loadSqlFile(m, registryKey, from) {
   const path = `${registryKey}.sql`;
-  const nojs = !m || m.sqlOnly;
-  if (nojs) {
+  debug('loadSqlFile', registryKey, from);
+  if (!m) {
     // sql file 没有对应的 js 控制文件
     m = {
       path: registryKey,
@@ -88,10 +98,10 @@ function loadSqlFile(m, registryKey) {
     if (err) {
       console.error(`load ${path} sql file error`);
       console.error(err);
-      return;
+      process.exit(-2);
     }
     const sqlLines = sql.split('\n');
-    if (nojs) {
+    if (m) { // always new or override m exports
       // 处理 .sql 文件头部 meta 信息，相当于 .js 的 exports.xxx，如 "-- pool: task"
       let i;
       for (i = 0; i < sqlLines.length; i += 1) {
@@ -130,7 +140,7 @@ function loadSqlFile(m, registryKey) {
       // static sql (but may use bind)
       m.sqltext = sqlparser.stripSqlComment(sql, sqlLines);
     }
-    registerModuleWithPrototype(registryKey, m);
+    registerModuleWithPrototype(registryKey, m, 'sql');
   });
 }
 
@@ -148,36 +158,13 @@ function processSqlFile(pp) {
     fs.access(jsFilePath, fs.constants.R_OK, (err) => {
       if (err) {
         // 没有对应的 js 文件，也就是独立 sql，创造一个虚拟 js 模块，配置从 .sql 文件头部的注释中取
-        loadSqlFile(null, registryKey);
+        loadSqlFile(null, registryKey, `sqlnojs`);
       } else {
         // 有对应的 .js，那就等着他重新再级联加载自己
       }
     });
   } else {
-    loadSqlFile(atomService, registryKey);
-  }
-}
-
-function checkAndRegisterModule(m, path, oper) {
-  let errorCount = 0;
-  if (m.path !== path) {
-    errorCount += 1;
-    console.warn(`文件路径${path}和 exports.path(${m.path}) 不一致`);
-  }
-  // 检查必要属性是否齐全
-  if (!m.title) {
-    errorCount += 1;
-    console.warn(`${path} 没有 title`);
-  }
-  // 检查 sqltext 是否存在 delete/update without where 的情况
-  m.sqltext = m.sqltext || m.sql; // 写成 sql 或者 sqltext 都行
-  const flagLoadSqlFile = !m.sqltext;
-  if (!m.sqltext) {
-    loadSqlFile(m, path);
-  }
-  if (errorCount === 0) {
-    registerModuleWithPrototype(path, m);
-    debug(`${oper} ${path} ${flagLoadSqlFile ? ' (load sql file)' : ''}`);
+    loadSqlFile(atomService, registryKey, 'sqlhasjs');
   }
 }
 
@@ -185,7 +172,7 @@ function processJsFile(pp, path, event) {
   const registryKey = computeRegKey(pp);
   const requirePath = Path.join(rootDir, path);
   let absPath;
-  let atomService;
+  let m;
   if (event === 'change' || event === 'unlink') {
     absPath = require.resolve(requirePath);
     if (absPath) {
@@ -196,12 +183,18 @@ function processJsFile(pp, path, event) {
   }
   if (event === 'change' || event === 'add') {
     try {
-      atomService = require(requirePath);
+      m = require(requirePath);
     } catch (e) {
       console.error('module init hot reload error', event, path, e);
-      return;
+      process.exit(-1);
     }
-    checkAndRegisterModule(atomService, registryKey, 'register');
+    m.sqltext = m.sqltext || m.sql; // 写成 sql 或者 sqltext 都行
+    m.flagLoadSqlFile = !m.sqltext; // flag where sql is from, js or sql
+    if (!m.sqltext) {
+      loadSqlFile(m, registryKey, 'jstosql');
+    } else {
+      registerModuleWithPrototype(registryKey, m);
+    }
   }
 }
 
