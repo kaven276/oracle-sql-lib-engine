@@ -19,13 +19,13 @@ function checkDangerousSqlText(m) {
 }
 
 // add prototype chain of dirConfig
-function registerModuleWithPrototype(path, m) {
+function registerModuleWithPrototype(registryKey, m) {
   checkDangerousSqlText(m);
-  const upPath = Path.dirname(path).substr(1);
+  const upPath = Path.dirname(registryKey).substr(1);
   const upConfig = dirMap.get(upPath);
   const sqlConfig = Object.create(upConfig);
   Object.assign(sqlConfig, m);
-  registry[path] = sqlConfig;
+  registry[registryKey] = sqlConfig;
 }
 
 function loadSqlFile(m, registryKey) {
