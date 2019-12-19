@@ -1,3 +1,13 @@
+/*
+  - require(jsfile) blockingly
+  - none-block asynchrously load sql file
+  - hot reloading dirConfig/js/sql
+  - load js then sql, osql will override js exports
+  - exit -1: require js file error
+  - exit -2: read sql file error
+  - exit -3: path mismatch
+*/
+
 const cfg = require('./cfg.js');
 const chokidar = require('chokidar');
 const Path = require('path');
