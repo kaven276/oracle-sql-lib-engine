@@ -6,8 +6,8 @@ const fs = require('fs');
 const debug = require('debug')('osql:services');
 const sqlparser = require('./sqlParser.js');
 
-const registry = {};
-const dirMap = new Map();
+const registry = {}; // /dir/dir2/file => {}, posix sep
+const dirMap = new Map(); // dir1/dir2 => {}, posix / sep
 const rootDir = cfg.dirServices || join(__dirname, '../services/');
 
 function checkDangerousSqlText(m) {
