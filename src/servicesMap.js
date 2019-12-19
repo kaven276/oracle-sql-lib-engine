@@ -32,7 +32,7 @@ function loadDirConfig(path, pp) {
     const upDirConfig = dirMap.get(pp.dir);
     dirConfig = Object.create(upDirConfig);
   }
-  dirMap.set(path, dirConfig);
+  dirMap.set(Path.sep === '/' ? path : path.replace(/\\/g, '/'), dirConfig);
 }
 
 // give osql.config.js path, update its dirConfig
