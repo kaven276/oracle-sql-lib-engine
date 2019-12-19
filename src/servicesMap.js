@@ -21,7 +21,7 @@ function checkDangerousSqlText(m) {
 // add prototype chain of dirConfig
 function registerModuleWithPrototype(path, m) {
   checkDangerousSqlText(m);
-  const upPath = path.substr(1, path.lastIndexOf('/') - 1);
+  const upPath = Path.dirname(path).substr(1);
   const upConfig = dirMap.get(upPath);
   const sqlConfig = Object.create(upConfig);
   Object.assign(sqlConfig, m);
