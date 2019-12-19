@@ -89,8 +89,13 @@ function loadSqlFile(m, registryKey) {
   });
 }
 
+// filepath to registry key consider posix or win32
+const computeRegKey = (pp) => ((Path.sep === '\\') ?
+  Path.join('/', pp.dir, pp.name).replace(/\\/g, '.') :
+  Path.join('/', pp.dir, pp.name));
+
 function processSqlFile(pp) {
-  const registryKey = Path.join('/', pp.dir, pp.name);
+  const registryKey = computeRegKey(pp);
   const atomService = registry[registryKey];
   if (!atomService || atomService.sqlOnly) {
     // 看看是否是独立 sql file，没有对应的 js file
@@ -132,7 +137,7 @@ function checkAndRegisterModule(m, path, oper) {
 }
 
 function processJsFile(pp, path, event) {
-  const registryKey = Path.join('/', pp.dir, pp.name);
+  const registryKey = computeRegKey(pp);
   const requirePath = Path.join(rootDir, path);
   let absPath;
   let atomService;
@@ -200,6 +205,9 @@ chokidar
   .on('all', (event, path) => {
     // console.log(event, path);
     const pp = Path.parse(path); // pp is parsed path
+    if (Path.sep === '\\') {
+      pp.dir = pp.dir.replace(/\\/g, '/');
+    }
     if (event === 'addDir') {
       loadDirConfig(path, pp);
     } else if (pp.base === 'osql.config.js') {
