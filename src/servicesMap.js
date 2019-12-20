@@ -223,6 +223,11 @@ chokidar
     } else if (pp.ext === '.js') {
       processJsFile(pp, path, event);
     }
+  })
+  .on('ready', () => {
+    if (testFlag) {
+      process.exit(0);
+    }
   });
 
 

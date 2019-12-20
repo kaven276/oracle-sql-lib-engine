@@ -5,6 +5,7 @@ module.exports = {
     oracledb: true,
     converters: true,
     sql: true,
+    testFlag: true,
   },
   extends: [
     "airbnb-base",
