@@ -1,6 +1,6 @@
 const path = require("path");
-
-const cfgFilePath = path.join(path.dirname(require.main.filename), ".osqlrc.js");
+// run server as lib project root directory
+const cfgFilePath = path.join(process.cwd(), ".osqlrc.js");
 const appConfig = require(cfgFilePath);
 const defaultConfig = {
   ConnectionTimeSlowThres: 5, // higher than this, log slow connection
