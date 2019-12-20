@@ -201,9 +201,12 @@ function processJsFile(pp, path, event) {
 chokidar
   .watch(rootDir, {
     cwd: rootDir,
-    disableGlobbing: false,
+    disableGlobbing: true,
     depth: 5,
-    awaitWriteFinish: true,
+    awaitWriteFinish: {
+      stabilityThreshold: 1000,
+      pollInterval: 100,
+    },
   })
   .on('all', (event, path) => {
     // console.log(event, path);
@@ -221,5 +224,6 @@ chokidar
       processJsFile(pp, path, event);
     }
   });
+
 
 exports.registry = registry;
