@@ -1,11 +1,17 @@
 {
   "name": "oracle-sql-lib-engine",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "description": "sql file as module and service",
   "main": "index.js",
   "repository": "kaven276/oracle-sql-lib-engine",
   "scripts": {
+    "lint": "eslint --ext .js ./src",
     "test": "cd example && DEBUG='osql:pools,osql:exec' node ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "bin": {
     "osql-start": "./bin/start.sh",
@@ -27,6 +33,7 @@
     "axios": "^0.19.0",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.8.0",
+    "husky": "^3.1.0"
   }
 }
