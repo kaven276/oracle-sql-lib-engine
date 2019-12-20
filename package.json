@@ -1,6 +1,6 @@
 {
   "name": "oracle-sql-lib-engine",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "sql file as module and service",
   "main": "index.js",
   "repository": "kaven276/oracle-sql-lib-engine",
@@ -9,7 +9,7 @@
   },
   "bin": {
     "osql-start": "./bin/start.sh",
-    "osql-test": "./bin/test.js"
+    "osql-test": "./bin/test.sh"
   },
   "keywords": [],
   "author": "李勇 <kaven276@vip.sina.com>",
