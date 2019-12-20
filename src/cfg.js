@@ -14,6 +14,7 @@ try {
 }
 
 const defaultConfig = {
+  defaultPoolName: 'default', // default pool name to "default"
   ConnectionTimeSlowThres: 5, // higher than this, log slow connection
   ExecutionTimeSlowThres: 50, // higher than this, log slow execution
   DMLNoWhereCheckThres: 100, // higher than this, do update|delete no-where check

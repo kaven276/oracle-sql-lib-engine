@@ -26,7 +26,7 @@ function loadDirConfig(path, pp) {
   let dirConfig;
   if (path === '') {
     dirConfig = Object.create({ // root osql.config.js inherit cfg.js
-      pool: cfg.defaultPoolName,
+      pool: cfg.defaultPoolName || 'default',
     });
   } else {
     const upDirConfig = dirMap.get(pp.dir);
