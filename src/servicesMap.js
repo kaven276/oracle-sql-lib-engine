@@ -225,7 +225,7 @@ chokidar
     }
   })
   .on('ready', () => {
-    if (!module.parent.id.endsWith('server.js') {
+    if (!module.parent.id.endsWith('server.js')) {
       process.exit(0);
     }
   });
