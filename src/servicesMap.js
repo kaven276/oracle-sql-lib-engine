@@ -73,7 +73,7 @@ function registerModuleWithPrototype(registryKey, m, from) {
   if (!m.title) {
     console.warn(`${registryKey} by ${from} 没有 title`);
   }
-  debug(`${registryKey} loaded}`);
+  debug(`${registryKey} loaded`);
   checkDangerousSqlText(m);
   const upPath = Path.dirname(registryKey).substr(1);
   const upConfig = dirMap.get(upPath);
@@ -225,10 +225,9 @@ chokidar
     }
   })
   .on('ready', () => {
-    if (testFlag) {
+    if (!module.parent.id.endsWith('server.js') {
       process.exit(0);
     }
   });
-
 
 exports.registry = registry;
