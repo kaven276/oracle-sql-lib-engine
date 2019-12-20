@@ -8,7 +8,7 @@ function startHttpServer() {
 
   const server = http.createServer(koaApp.callback());
   server.listen(PORT, "0.0.0.0", () => {
-    console.log("oracle-sql-lib-engine server begin listening");
+    console.log("oracle-sql-lib-engine server begin listening at", PORT);
   });
 }
 
