@@ -8,8 +8,8 @@
     "test": "cd example && DEBUG='osql:pools,osql:exec' node ."
   },
   "bin": {
-    "osql-start": "./index.js",
-    "osql-test": "./src/servicesMap.js"
+    "osql-start": "./bin/start.sh",
+    "osql-test": "./bin/test.js"
 },
   "keywords": [],
   "author": "李勇 <kaven276@vip.sina.com>",
