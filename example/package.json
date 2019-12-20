@@ -4,16 +4,23 @@
   "description": "oracle sql lib example project based on oracle-sql-lib-engine",
   "main": "index.js",
   "scripts": {
-    "start": "DEBUG='osql:pools,osql:exec' node .",
-    "test": "node test"
+    "lint": "eslint --fix --ignore-path .gitignore .",
+    "start": "osql-start",
+    "test": "osql-test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
   },
   "keywords": [],
   "author": "李勇 <kaven276@vip.sina.com>",
   "license": "ISC",
   "dependencies": {
-    "oracle-sql-lib-engine": "^0.0.9",
+    "oracle-sql-lib-engine": "latest",
     "oracledb": "^3.1.2"
   },
   "devDependencies": {
+    "husky": "^3.1.0"
   }
 }
