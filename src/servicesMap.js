@@ -58,7 +58,7 @@ function updateDirConfig(pp, path, event) {
 function checkDangerousSqlText(m) {
   if (!m.sqltext) return;
   const sqltext = (m.sqltext instanceof Function) ? m.sqltext.toString() : m.sqltext;
-  if (sqltext.match(/(delete|update)/ig) && !sqltext.match(/where/ig)) {
+  if (sqltext.match(/\b(delete|update)\b/ig) && !sqltext.match(/where/ig)) {
     m.staticError = 'delete|update without where filter';
   }
 }
